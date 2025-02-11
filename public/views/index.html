@@ -191,12 +191,51 @@
 </div>
 
     <!-- Productos -->
-    <main class="container mt-4">
-        <h2 class="text-center mb-4">Catálogo de Productos</h2>
-        <div id="product-list" class="row">
-            <!-- Productos cargados dinámicamente -->
-        </div>
-    </main>
+<main class="container mt-4">
+    <h2 class="text-center mb-4">Catálogo de Productos</h2>
+    <div id="product-list" class="row">
+        <!-- Productos cargados dinámicamente -->
+    </div>
+</main>
+
+<!-- Carrito -->
+<section class="container mt-5">
+    <h2 class="text-center mb-4">Carrito de Compras</h2>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="table-primary">
+                <tr>
+                    <th>PRODUCTO</th>
+                    <th>NOMBRE</th>
+                    <th>PRECIO</th>
+                    <th>CANTIDAD</th>
+                    <th>TOTAL</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+                <!-- Aquí se insertarán los items del carrito dinámicamente -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                    <td id="cart-total">$0.00</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <!-- Botones de acción del carrito -->
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <button id="clear-cart" class="btn btn-outline-danger">
+            Vaciar Carrito
+        </button>
+        <button id="checkout" class="btn btn-primary">
+            Proceder al Pago
+        </button>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer id="footer">
