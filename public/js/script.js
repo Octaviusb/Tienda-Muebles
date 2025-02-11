@@ -1,132 +1,86 @@
-document.addEventListener('DOMContentLoaded', function() {
-    let productos = [];  // Define y llena esta variable adecuadamente.
-    let carrito = [];
-    const carritoItems = document.getElementById('carrito-items');
-    const total = document.getElementById('total');
+document.addEventListener("DOMContentLoaded", function () {
+    const loginIcon = document.getElementById("login-icon");
+    const heartIcon = document.getElementById("heart-icon");
+    const cartIcon = document.getElementById("cart-icon");
 
-    function agregarAlCarrito(event) {
-        const productId = parseInt(event.target.dataset.id);
-        const producto = productos.find(item => item.id === productId);
-        if (producto) {
-            const itemExistente = carrito.find(item => item.id === productId);
-            if (itemExistente) {
-                itemExistente.cantidad++;
-            } else {
-                carrito.push({ ...producto, cantidad: 1 });
-            }
-            renderizarCarrito();
+    const loginPopup = document.getElementById("login-popup");
+    const heartPopup = document.getElementById("heart-popup");
+    const cartPopup = document.getElementById("cart-popup");
+
+    // Función para mostrar popups
+    function mostrarPopup(popup) {
+        if (popup) {
+            popup.style.display = "flex";
         }
     }
 
-    function renderizarCarrito() {
-        carritoItems.innerHTML = '';
-        carrito.forEach(item => {
-            const carritoItem = document.createElement('li');
-            carritoItem.classList.add('carrito-item');
-            carritoItem.innerHTML = `
-                ${item.nombre} - Cantidad: ${item.cantidad} - Precio: $${(item.precio * item.cantidad).toFixed(2)}
-                <button data-id="${item.id}">Eliminar</button>
-            `;
-            carritoItem.querySelector('button').addEventListener('click', eliminarDelCarrito);
-            carritoItems.appendChild(carritoItem);
-        });
-        calcularTotal();
+    // Función para ocultar popups
+    function ocultarPopup(popup) {
+        if (popup) {
+            popup.style.display = "none";
+        }
     }
 
-    function eliminarDelCarrito(event) {
-        const itemId = parseInt(event.target.dataset.id);
-        carrito = carrito.filter(item => item.id !== itemId);
-        renderizarCarrito();
-    }
-
-    function calcularTotal() {
-        const totalPagar = carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
-        total.textContent = `$${totalPagar.toFixed(2)}`;
-    }
-
-    function validarFormularioPago() {
-        const formaPago = document.querySelector('input[name="formaPago"]:checked').value;
-        const nombre = document.getElementById('nombre').value;
-        const codigoPostal = document.getElementById('codigoPostal').value;
-
-        const regexNombre = /^[a-zA-Z\s]+$/;
-        const regexCodigoPostal = /^\d{5}$/;
-
-        if (formaPago === 'efectivo') {
-            if (!regexNombre.test(nombre)) {
-                alert('Por favor, ingrese un nombre válido.');
-                return false;
-            }
-            if (!regexCodigoPostal.test(codigoPostal)) {
-                alert('Por favor, ingrese un código postal válido (5 dígitos).');
-                return false;
-            }
-            return true;
-        }
-
-        const tarjeta = document.getElementById('tarjeta').value;
-        const fechaVencimiento = document.getElementById('fechaVencimiento').value;
-        const codigoSeguridad = document.getElementById('codigoSeguridad').value;
-
-        const regexTarjeta = /^[0-9]{16}$/;
-        const regexFechaVencimiento = /^(0[1-9]|1[0-2])\/\d{2}$/;
-        const regexCodigoSeguridad = /^[0-9]{3,4}$/;
-
-        if (!regexNombre.test(nombre)) {
-            alert('Por favor, ingrese un nombre válido.');
-            return false;
-        }
-        if (!regexTarjeta.test(tarjeta)) {
-            alert('Por favor, ingrese un número de tarjeta válido (16 dígitos).');
-            return false;
-        }
-        if (!regexFechaVencimiento.test(fechaVencimiento)) {
-            alert('Por favor, ingrese una fecha de vencimiento válida (MM/AA).');
-            return false;
-        }
-        if (!regexCodigoSeguridad.test(codigoSeguridad)) {
-            alert('Por favor, ingrese un código de seguridad válido (3 o 4 dígitos).');
-            return false;
-        }
-        if (!regexCodigoPostal.test(codigoPostal)) {
-            alert('Por favor, ingrese un código postal válido (5 dígitos).');
-            return false;
-        }
-        return true;
-    }
-
-    const procederPagoBtn = document.getElementById('procederPagoBtn');
-    if (procederPagoBtn) {
-        procederPagoBtn.addEventListener('click', function() {
-            // Tu lógica aquí
+    // Mostrar popups al pasar el mouse
+    if (loginIcon) {
+        loginIcon.addEventListener("mouseenter", function () {
+            mostrarPopup(loginPopup);
         });
     }
 
-    const procederPagoTarjetaBtn = document.getElementById('procederPagoTarjetaBtn');
-    if (procederPagoTarjetaBtn) {
-        procederPagoTarjetaBtn.addEventListener('click', () => {
-            if (validarFormularioPago()) {
-                procederPagoConTarjeta();
-            } else {
-                alert('Por favor, complete correctamente el formulario de pago.');
-            }
+    if (heartIcon) {
+        heartIcon.addEventListener("mouseenter", function () {
+            mostrarPopup(heartPopup);
         });
     }
 
-    const procederPagoEfectivoBtn = document.getElementById('procederPagoEfectivoBtn');
-    if (procederPagoEfectivoBtn) {
-        procederPagoEfectivoBtn.addEventListener('click', () => {
-            if (validarFormularioPago()) {
-                procederPagoEnEfectivo();
-            } else {
-                alert('Por favor, complete correctamente el formulario de pago.');
-            }
+    if (cartIcon) {
+        cartIcon.addEventListener("mouseenter", function () {
+            mostrarPopup(cartPopup);
         });
     }
 
-    function renderizarProductos() {
-        // Implementa tu lógica para renderizar los productos en la tienda
+    // Ocultar popups cuando el mouse salga
+    if (loginPopup) {
+        loginPopup.addEventListener("mouseleave", function () {
+            ocultarPopup(loginPopup);
+        });
     }
 
-    renderizarProductos();
+    if (heartPopup) {
+        heartPopup.addEventListener("mouseleave", function () {
+            ocultarPopup(heartPopup);
+        });
+    }
+
+    if (cartPopup) {
+        cartPopup.addEventListener("mouseleave", function () {
+            ocultarPopup(cartPopup);
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const icons = document.querySelectorAll(".user-icon");
+
+    icons.forEach(icon => {
+        icon.addEventListener("mouseenter", function () {
+            cerrarPopups(); // Cierra otros popups
+            const popupId = icon.id.replace("-icon", "-popup");
+            const popup = document.getElementById(popupId);
+            popup.classList.add("active");
+        });
+
+        icon.addEventListener("mouseleave", function () {
+            setTimeout(() => {
+                const popupId = icon.id.replace("-icon", "-popup");
+                const popup = document.getElementById(popupId);
+                popup.classList.remove("active");
+            }, 300); // Pequeño retraso para evitar cierre instantáneo
+        });
+    });
+
+    function cerrarPopups() {
+        document.querySelectorAll(".popup").forEach(popup => popup.classList.remove("active"));
+    }
 });

@@ -16,6 +16,8 @@
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -51,17 +53,32 @@
             <!-- Información de contacto y botones de login -->
             <div class="user-info">
                 <p class="mb-1">Contacto: +57 316 301 5784</p>
-                <div id="_desktop_user_info">
-                    <div class="user-info">
-                        <a class="bon-tooltip" href="/perfil" rel="nofollow">
-                            <i class="fl-outicons-user189"></i>
-                        </a>
-                        <div class="bon-login-popup">
-                            <div class="bon-login-popup-button">
-                                <a class="bon-login btn btn-primary" href="/login" rel="nofollow">Iniciar sesión</a>
-                                <a class="bon-login btn btn-primary" href="/registro" rel="nofollow">Crear una cuenta</a>
-                            </div>
+                <div class="user-container">
+                    <!-- Icono de usuario -->
+                    <a href="#" id="login-icon" class="user-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <div id="login-popup" class="popup"> 
+                        <div class="login-popup-button">
+                            <a class="login-btn" href="/login" rel="nofollow">INICIAR SESIÓN</a>
+                            <a class="login-btn" href="/registro" rel="nofollow">CREAR UNA CUENTA</a>
                         </div>
+                    </div>
+                
+                    <!-- Icono de corazón -->
+                    <a href="#" id="heart-icon" class="user-icon">
+                        <i class="fa-solid fa-heart"></i>
+                    </a>
+                    <div id="heart-popup" class="popup">
+                        <p>Lista de deseos vacía</p>
+                    </div>
+                
+                    <!-- Icono de carrito -->
+                    <a href="#" id="cart-icon" class="user-icon">
+                        <i class="fa-solid fa-shopping-cart"></i>
+                    </a>
+                    <div id="cart-popup" class="popup">
+                        <p>Tu carrito está vacío</p>
                     </div>
                 </div>
             </div>
@@ -193,8 +210,9 @@
         <div class="footer-container">
             <div class="row">
                 <div class="col-md-3">
-                    <h5>Nuestra Tienda</h5>
-                    <p>Dirección, Ciudad, País</p>
+                    <h5>Dental E Shop</h5>
+                    <p>Cra 42 #39 Sur 90 Envigado, Antioquia, Colombia</p>
+                    <p>Cel 316 301 5784</p>
                 </div>
                 <div class="col-md-3">
                     <h5>Redes Sociales</h5>
@@ -227,90 +245,7 @@
             </div>
         </div>
     </footer>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const productList = document.getElementById("product-list");
-            const cartContainer = document.getElementById("cart-items"); // Contenedor donde se mostrará el carrito
-    
-            // Cargar los productos desde el archivo CSV
-            Papa.parse('/data/productos.csv', {
-                download: true,
-                header: true,
-                complete: function (results) {
-                    const productos = results.data.filter(producto => producto.imagen && producto.nombre && producto.precio);
-                    if (productos.length === 0) {
-                        productList.innerHTML = '<p class="text-muted">No hay productos disponibles.</p>';
-                        return;
-                    }
-                    productos.forEach(producto => {
-                        const productItem = document.createElement("div");
-                        productItem.className = "col-lg-3 col-md-4 col-sm-6 pb-3";
-                        productItem.innerHTML = `
-                            <div class="card h-100">
-                                <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">${producto.nombre}</h5>
-                                    <p class="card-text text-primary">${producto.precio}</p>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="addToCart('${producto.nombre}', ${parseFloat(producto.precio.replace(/[^\d.-]/g, ''))})">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        `;
-                        productList.appendChild(productItem);
-                    });
-                },
-                error: function (err) {
-                    console.error("Error al cargar productos:", err);
-                    productList.innerHTML = '<p class="text-danger">Error al cargar productos.</p>';
-                }
-            });
-    
-            // Obtener carrito desde localStorage
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-            // Función para agregar productos al carrito
-            function addToCart(product, price) {
-                console.log(`Producto añadido: ${product}, Precio: ${price}`); // Verifica que el evento se dispare
-                const existingProduct = cart.find(item => item.product === product);
-                if (existingProduct) {
-                    existingProduct.quantity++;
-                } else {
-                    cart.push({ product, price, quantity: 1 });
-                }
-                localStorage.setItem('cart', JSON.stringify(cart));
-                updateCart();
-                displayCart();
-            }
-    
-            // Función para actualizar el carrito
-            function updateCart() {
-                // Asegurarse de que el carrito esté actualizado en el almacenamiento local
-                localStorage.setItem('cart', JSON.stringify(cart));
-            }
-    
-            // Función para mostrar los productos del carrito en la interfaz
-            function displayCart() {
-                const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-                cartContainer.innerHTML = ''; // Limpiar el contenido previo
-    
-                if (cartItems.length === 0) {
-                    cartContainer.innerHTML = '<p>No hay productos en el carrito.</p>';
-                    return;
-                }
-    
-                cartItems.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'cart-item';
-                    itemElement.innerHTML = `
-                        <p>${item.product} - $${item.price} x ${item.quantity}</p>
-                    `;
-                    cartContainer.appendChild(itemElement);
-                });
-            }
-    
-            // Llamar a displayCart al cargar la página para mostrar los productos del carrito si existen
-            displayCart();
-        });
-    </script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/main.js"></script>

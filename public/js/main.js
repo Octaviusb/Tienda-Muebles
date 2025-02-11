@@ -1,54 +1,75 @@
-document.addEventListener('DOMContentLoaded', function () {
-    let carrito = [];
-    const carritoItems = document.getElementById('carrito-items');
-    const total = document.getElementById('total');
-    const pagarConWompiBtn = document.getElementById('pagarConWompi');
+document.addEventListener("DOMContentLoaded", function () {
+    const productList = document.getElementById("product-list");
+    const cartContainer = document.getElementById("cart-items"); // Contenedor donde se mostrará el carrito
 
-    pagarConWompiBtn.addEventListener('click', () => {
-        if (carrito.length > 0) {
-            procesarPagoConWompi();
-        } else {
-            alert('El carrito está vacío. Por favor, agregue productos antes de pagar.');
+    // Cargar los productos desde el archivo CSV
+    Papa.parse('/data/productos.csv', {
+        download: true,
+        header: true,
+        complete: function (results) {
+            const productos = results.data.filter(producto => producto.imagen && producto.nombre && producto.precio);
+            if (productos.length === 0) {
+                productList.innerHTML = '<p class="text-muted">No hay productos disponibles.</p>';
+                return;
+            }
+            productos.forEach(producto => {
+                const productItem = document.createElement("div");
+                productItem.className = "col-lg-3 col-md-4 col-sm-6 pb-3";
+                productItem.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">${producto.nombre}</h5>
+                            <p class="card-text text-primary">${producto.precio}</p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="addToCart('${producto.nombre}', ${parseFloat(producto.precio.replace(/[^\d.-]/g, ''))})">Añadir al carrito</button>
+                        </div>
+                    </div>
+                `;
+                productList.appendChild(productItem);
+            });
+        },
+        error: function (err) {
+            console.error("Error al cargar productos:", err);
+            productList.innerHTML = '<p class="text-danger">Error al cargar productos.</p>';
         }
     });
 
-    function renderizarCarrito() {
-        carritoItems.innerHTML = '';
-        carrito.forEach(item => {
-            const carritoItem = document.createElement('li');
-            carritoItem.innerHTML = `
-                ${item.nombre} - Cantidad: ${item.cantidad} - Precio: $${(item.precio * item.cantidad).toFixed(2)}
-                <button data-id="${item.id}">Eliminar</button>
+    // Obtener carrito desde localStorage
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Función para agregar productos al carrito
+    window.addToCart = function (product, price) { // Hacer la función accesible globalmente
+        console.log(`Producto añadido: ${product}, Precio: ${price}`); // Verifica que el evento se dispare
+        const existingProduct = cart.find(item => item.product === product);
+        if (existingProduct) {
+            existingProduct.quantity++;
+        } else {
+            cart.push({ product, price, quantity: 1 });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        displayCart();
+    }
+
+    // Función para mostrar los productos del carrito en la interfaz
+    function displayCart() {
+        const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        cartContainer.innerHTML = ''; // Limpiar el contenido previo
+
+        if (cartItems.length === 0) {
+            cartContainer.innerHTML = '<p>No hay productos en el carrito.</p>';
+            return;
+        }
+
+        cartItems.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <p>${item.product} - $${item.price} x ${item.quantity}</p>
             `;
-            carritoItem.querySelector('button').addEventListener('click', eliminarDelCarrito);
-            carritoItems.appendChild(carritoItem);
+            cartContainer.appendChild(itemElement);
         });
-        calcularTotal();
     }
 
-    function calcularTotal() {
-        const subtotal = carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
-        total.textContent = `$${subtotal.toFixed(2)}`;
-    }
-
-    function eliminarDelCarrito(event) {
-        const itemId = parseInt(event.target.dataset.id);
-        carrito = carrito.filter(item => item.id !== itemId);
-        renderizarCarrito();
-    }
-
-    function procesarPagoConWompi() {
-        const subtotal = carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
-        const envio = 10; // Costo de envío
-        const total = subtotal + envio;
-
-        window.location.href = `https://checkout.wompi.co/?public-key=TU_PUBLIC_KEY&currency=COP&amount-in-cents=${total * 100}&reference=mi-carrito-123&redirect-url=http://tu-sitio.com/gracias`;
-    }
-
-    // Inicializar carrito con productos para prueba
-    carrito = [
-        { id: 1, nombre: 'Producto A', precio: 50000, cantidad: 1 },
-        { id: 2, nombre: 'Producto B', precio: 30000, cantidad: 2 }
-    ];
-    renderizarCarrito();
+    // Llamar a displayCart al cargar la página para mostrar los productos del carrito si existen
+    displayCart();
 });
