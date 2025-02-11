@@ -1,86 +1,61 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const loginIcon = document.getElementById("login-icon");
-    const heartIcon = document.getElementById("heart-icon");
-    const cartIcon = document.getElementById("cart-icon");
+    // Cambiamos el selector para que coincida con tu HTML
+    const icons = document.querySelectorAll("i.user-icon"); // Cambiado de ".user-icon i" a "i.user-icon"
+    const popups = document.querySelectorAll(".popup");
 
-    const loginPopup = document.getElementById("login-popup");
-    const heartPopup = document.getElementById("heart-popup");
-    const cartPopup = document.getElementById("cart-popup");
+    function mostrarPopup(icon) {
+        cerrarPopups();
 
-    // Función para mostrar popups
-    function mostrarPopup(popup) {
+        const popupId = icon.dataset.popup;
+        const popup = document.getElementById(popupId);
+
         if (popup) {
-            popup.style.display = "flex";
+            popup.classList.add("active");
+
+            // Posicionamiento mejorado
+            const iconRect = icon.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+            
+            let left = iconRect.left + window.scrollX;
+            let top = iconRect.bottom + window.scrollY + 5;
+
+            // Evitar que el popup se salga de la ventana
+            if (left + popupRect.width > window.innerWidth) {
+                left = window.innerWidth - popupRect.width - 10;
+            }
+
+            popup.style.top = `${top}px`;
+            popup.style.left = `${left}px`;
         }
     }
 
-    // Función para ocultar popups
     function ocultarPopup(popup) {
-        if (popup) {
-            popup.style.display = "none";
-        }
+        setTimeout(() => {
+            if (!popup.matches(":hover") && !document.querySelector("i.user-icon:hover")) {
+                popup.classList.remove("active");
+            }
+        }, 300);
     }
 
-    // Mostrar popups al pasar el mouse
-    if (loginIcon) {
-        loginIcon.addEventListener("mouseenter", function () {
-            mostrarPopup(loginPopup);
-        });
+    function cerrarPopups() {
+        popups.forEach(popup => popup.classList.remove("active"));
     }
-
-    if (heartIcon) {
-        heartIcon.addEventListener("mouseenter", function () {
-            mostrarPopup(heartPopup);
-        });
-    }
-
-    if (cartIcon) {
-        cartIcon.addEventListener("mouseenter", function () {
-            mostrarPopup(cartPopup);
-        });
-    }
-
-    // Ocultar popups cuando el mouse salga
-    if (loginPopup) {
-        loginPopup.addEventListener("mouseleave", function () {
-            ocultarPopup(loginPopup);
-        });
-    }
-
-    if (heartPopup) {
-        heartPopup.addEventListener("mouseleave", function () {
-            ocultarPopup(heartPopup);
-        });
-    }
-
-    if (cartPopup) {
-        cartPopup.addEventListener("mouseleave", function () {
-            ocultarPopup(cartPopup);
-        });
-    }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const icons = document.querySelectorAll(".user-icon");
 
     icons.forEach(icon => {
-        icon.addEventListener("mouseenter", function () {
-            cerrarPopups(); // Cierra otros popups
-            const popupId = icon.id.replace("-icon", "-popup");
-            const popup = document.getElementById(popupId);
-            popup.classList.add("active");
-        });
-
-        icon.addEventListener("mouseleave", function () {
-            setTimeout(() => {
-                const popupId = icon.id.replace("-icon", "-popup");
-                const popup = document.getElementById(popupId);
-                popup.classList.remove("active");
-            }, 300); // Pequeño retraso para evitar cierre instantáneo
+        icon.addEventListener("mouseenter", function() {
+            mostrarPopup(this);
         });
     });
 
-    function cerrarPopups() {
-        document.querySelectorAll(".popup").forEach(popup => popup.classList.remove("active"));
-    }
+    popups.forEach(popup => {
+        popup.addEventListener("mouseleave", function() {
+            ocultarPopup(this);
+        });
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!event.target.closest(".user-icon") && !event.target.closest(".popup")) {
+            cerrarPopups();
+        }
+    });
 });

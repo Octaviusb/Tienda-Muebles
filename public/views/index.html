@@ -54,32 +54,25 @@
             <div class="user-info">
                 <p class="mb-1">Contacto: +57 316 301 5784</p>
                 <div class="user-container">
-                    <!-- Icono de usuario -->
-                    <a href="#" id="login-icon" class="user-icon">
-                        <i class="fas fa-user"></i>
-                    </a>
-                    <div id="login-popup" class="popup"> 
-                        <div class="login-popup-button">
-                            <a class="login-btn" href="/login" rel="nofollow">INICIAR SESIÓN</a>
-                            <a class="login-btn" href="/registro" rel="nofollow">CREAR UNA CUENTA</a>
-                        </div>
-                    </div>
+                    <i id="login-icon" class="fas fa-user user-icon" data-popup="login-popup"></i>
+                    <i id="heart-icon" class="fa-solid fa-heart user-icon" data-popup="heart-popup"></i>
+                    <i id="cart-icon" class="fa-solid fa-shopping-cart user-icon" data-popup="cart-popup"></i>
+                </div>
                 
-                    <!-- Icono de corazón -->
-                    <a href="#" id="heart-icon" class="user-icon">
-                        <i class="fa-solid fa-heart"></i>
-                    </a>
-                    <div id="heart-popup" class="popup">
-                        <p>Lista de deseos vacía</p>
-                    </div>
+                <div id="login-popup" class="popup">
+                    <a class="login-btn" href="/login" rel="nofollow">Iniciar Sesión</a>
+                    <a class="login-btn" href="/registro" rel="nofollow">Crear una Cuenta</a>
+                </div>
                 
-                    <!-- Icono de carrito -->
-                    <a href="#" id="cart-icon" class="user-icon">
-                        <i class="fa-solid fa-shopping-cart"></i>
-                    </a>
-                    <div id="cart-popup" class="popup">
-                        <p>Tu carrito está vacío</p>
-                    </div>
+                <div id="heart-popup" class="popup">
+                    <p>Lista de deseos vacía.</p>
+                </div>
+                
+                <div id="cart-popup" class="popup">
+                    <p>Carrito vacío.</p>
+                    <a class="nav-link" href="/cart"> Ver Carrito</a>
+                </div>
+                                   
                 </div>
             </div>
         </div>
